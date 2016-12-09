@@ -13,11 +13,10 @@ void LispTest::TearDown() {
 // evaluate expression and compare result to expected
 void LispTest::ExpectEq(const std::string& expression, std::string result) {
     lispp::ObjectPtr<> eval_expression = vm_->eval(expression);
-    lispp::ObjectPtr<> eval_result = vm_->parse(result);
+    // lispp::ObjectPtr<> eval_result = vm_->parse(result);
+    std::string eval_string = (eval_expression.valid() ? eval_expression->to_string() : "()");
 
-    EXPECT_TRUE(eval_result.safe_equal(eval_expression))
-        << "Expected " << (eval_result.valid() ? eval_result->to_string() : "nil") << std::endl
-        << "Got " << (eval_expression.valid() ? eval_expression->to_string() : "nil");
+    EXPECT_EQ(result, eval_string);
 }
 
 // evaluate expression and check that there is not errors
@@ -35,7 +34,7 @@ void LispTest::ExpectSyntaxError(const std::string& expression) {
         thrown = true;
     } catch (const lispp::ParserError& e) {
         thrown = true;
-    } catch (const lispp::InvalidArgumentsNumberError& e) {
+    } catch (const lispp::MacroArgumentsError& e) {
         thrown = true;
     } catch (...) {}
 

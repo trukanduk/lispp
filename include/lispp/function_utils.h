@@ -9,9 +9,9 @@
 
 namespace lispp {
 
-class InvalidArgumentsNumberError : public ExecutionError {
+class MacroArgumentsError : public std::runtime_error {
 public:
-  using ExecutionError::ExecutionError;
+  using runtime_error::runtime_error;
 };
 
 bool is_true_value(const ObjectPtr<>& object);
@@ -24,7 +24,8 @@ constexpr int kInvalidArgNumber = -1;
 template<typename ObjectType>
 void throw_bad_arg(const ObjectPtr<>& object,
                    const std::string& function_name,
-                   int arg_number = kInvalidArgNumber) {
+                   int arg_number = kInvalidArgNumber,
+                   CallableType callable_type = CallableType::kFunction) {
   std::stringstream ss;
   ss << function_name << ": expected " << ObjectType::GetTypeName();
   if (arg_number != kInvalidArgNumber) {
@@ -37,17 +38,22 @@ void throw_bad_arg(const ObjectPtr<>& object,
     ss << *object;
   }
 
-  throw InvalidArgumentsNumberError(ss.str());
+  if (callable_type == CallableType::kFunction) {
+    throw ExecutionError(ss.str());
+  } else {
+    throw MacroArgumentsError(ss.str());
+  }
 }
 
 template<typename ObjectType>
 ObjectPtr<ObjectType> arg_cast(const ObjectPtr<>& object,
                                const std::string& function_name,
-                               int arg_number = kInvalidArgNumber) {
+                               int arg_number = kInvalidArgNumber,
+                               CallableType callable_type = CallableType::kFunction) {
   auto result = object.safe_cast<ObjectType>();
 
   if (!result.valid()) {
-    throw_bad_arg<ObjectType>(object, function_name, arg_number);
+    throw_bad_arg<ObjectType>(object, function_name, arg_number, callable_type);
   }
 
   return result;

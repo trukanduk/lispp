@@ -7,7 +7,7 @@ namespace lispp {
 
 std::string CallableObject::to_string() const {
   if (type_ == CallableType::kFunction) {
-    return "<function>";
+    return "<procedure>";
   } else {
     return "<macro>";
   }

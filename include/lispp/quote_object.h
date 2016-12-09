@@ -28,7 +28,7 @@ public:
   }
 
   std::string to_string() const override {
-    return "'" + (value_.valid() ? value_->to_string() : "nil");
+    return "(quote " + (value_.valid() ? value_->to_string() : "nil") + ")";
   }
 
   ObjectPtr<> eval(const std::shared_ptr<Scope>&) override {

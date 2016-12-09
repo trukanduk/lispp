@@ -38,7 +38,11 @@ void check_args_count(const std::string& function_name,
        << function_name
        << "requires exactly " << expected_args_count << " but "
        << args_count << " given";
-    throw InvalidArgumentsNumberError(ss.str());
+    if (type == CallableType::kFunction) {
+      throw ExecutionError(ss.str());
+    } else {
+      throw MacroArgumentsError(ss.str());
+    }
   }
 }
 
@@ -57,7 +61,12 @@ void check_args_count(const std::string& function_name,
       ss << " up to " << expected_args_count_max;
     }
     ss << " args but " << args_count << " given";
-    throw InvalidArgumentsNumberError(ss.str());
+
+    if (type == CallableType::kFunction) {
+      throw ExecutionError(ss.str());
+    } else {
+      throw MacroArgumentsError(ss.str());
+    }
   }
 }
 

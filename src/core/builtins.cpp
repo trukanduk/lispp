@@ -16,7 +16,9 @@ namespace builtins {
 ObjectPtr<> cond_macro(const std::shared_ptr<Scope>& scope,
                        const std::vector<ObjectPtr<>>& args) {
   for (auto& branch : args) {
-    auto cons_branch = arg_cast<ConsObject>(branch, "cond");
+    auto cons_branch = arg_cast<ConsObject>(branch, "cond",
+                                            kInvalidArgNumber,
+                                            CallableType::kMacro);
 
     auto unpacked_branch = unpack_list(cons_branch);
     ObjectPtr<> condition = unpacked_branch[0];
@@ -64,7 +66,7 @@ ObjectPtr<> eval_macro(const std::shared_ptr<Scope>& scope,
 
 ObjectPtr<> not_macro(const std::shared_ptr<Scope>& scope,
                   const std::vector<ObjectPtr<>>& args) {
-  check_args_count("not", args.size(), 1, CallableType::kMacro);
+  check_args_count("not", args.size(), 1, CallableType::kFunction);
 
   bool condition_value = is_true_condition(args[0], scope);
   return new BooleanObject(!condition_value);
@@ -107,7 +109,8 @@ ObjectPtr<> let_macro(const std::shared_ptr<Scope>& scope,
                            "for variable item");
     }
 
-    auto varname = arg_cast<SymbolObject>(var_info[0], "let");
+    auto varname = arg_cast<SymbolObject>(var_info[0], "let", kInvalidArgNumber,
+                                          CallableType::kMacro);
     ObjectPtr<> eval_result = var_info[1].safe_eval(scope);
 
     local_scope->set_value(varname->get_value(), eval_result);
@@ -130,12 +133,14 @@ namespace {
     auto rest_arg = unpack_list_rest(cons_args, &arg_symbols);
     arg_names->reserve(arg_symbols.size());
     for (std::size_t arg_index = 0; arg_index < arg_symbols.size(); ++arg_index) {
-      auto sym_arg = arg_cast<SymbolObject>(arg_symbols[arg_index], macro_name);
+      auto sym_arg = arg_cast<SymbolObject>(arg_symbols[arg_index], macro_name,
+                                            0, CallableType::kMacro);
       arg_names->push_back(sym_arg->get_value());
     }
 
     if (rest_arg.valid()) {
-      auto rest_arg_symbol = arg_cast<SymbolObject>(rest_arg, macro_name);
+      auto rest_arg_symbol = arg_cast<SymbolObject>(rest_arg, macro_name, 1,
+                                                    CallableType::kMacro);
       *rest_arg_name = rest_arg_symbol->get_value();
     } else {
       *rest_arg_name = "";
@@ -171,10 +176,11 @@ namespace {
                               const std::shared_ptr<Scope>& scope,
                               const std::vector<ObjectPtr<>>& args,
                               CallableType callable_type) {
-    auto header = arg_cast<ConsObject>(args[0], macro_name);
+    auto header = arg_cast<ConsObject>(args[0], macro_name, 0,
+                                       CallableType::kMacro);
 
     auto function_name = arg_cast<SymbolObject>(
-        header->get_left_value(), macro_name);
+        header->get_left_value(), macro_name, 0, CallableType::kMacro);
     auto function_args = header->get_right_value();
 
     std::vector<std::string> arg_names;
@@ -213,9 +219,10 @@ ObjectPtr<> define_macro(const std::shared_ptr<Scope>& scope,
 
     auto result = args[1].safe_eval(scope);
     scope->set_value(varname_symbol->get_value(), result);
-    return result;
+    return nullptr;
   } else {
-    return define_callable("define", scope, args, CallableType::kFunction);
+    define_callable("define", scope, args, CallableType::kFunction);
+    return nullptr;
   }
 }
 
@@ -236,7 +243,8 @@ ObjectPtr<> set_macro(const std::shared_ptr<Scope>& scope,
   // }
   check_args_count("set!", args.size(), 2, CallableType::kMacro);
 
-  auto sym_name = arg_cast<SymbolObject>(args[0], "set!");
+  auto sym_name = arg_cast<SymbolObject>(args[0], "set!", 0,
+                                         CallableType::kMacro);
 
   auto eval_result = args[1].safe_eval(scope);
   scope->replace_value(sym_name->get_value(), eval_result);
@@ -248,7 +256,8 @@ ObjectPtr<> setcar_macro(const std::shared_ptr<Scope>& scope,
                          const std::vector<ObjectPtr<>>& args) {
   check_args_count("set-car!", args.size(), 2, CallableType::kMacro);
 
-  auto sym_name = arg_cast<SymbolObject>(args[0], "set-car!");
+  auto sym_name = arg_cast<SymbolObject>(args[0], "set-car!", 0,
+                                         CallableType::kMacro);
 
   auto object = scope->get_value(sym_name->get_value()).safe_cast<ConsObject>();
   if (!object.valid()) {
@@ -264,7 +273,8 @@ ObjectPtr<> setcdr_macro(const std::shared_ptr<Scope>& scope,
                          const std::vector<ObjectPtr<>>& args) {
   check_args_count("set-cdr!", args.size(), 2, CallableType::kMacro);
 
-  auto sym_name = arg_cast<SymbolObject>(args[0], "set-cdr!");
+  auto sym_name = arg_cast<SymbolObject>(args[0], "set-cdr!", 0,
+                                         CallableType::kMacro);
 
   auto object = scope->get_value(sym_name->get_value()).safe_cast<ConsObject>();
   if (!object.valid()) {

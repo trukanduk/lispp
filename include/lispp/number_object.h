@@ -26,7 +26,9 @@ public:
   }
 
   std::string to_string() const override {
-    return std::to_string(value_);
+    std::stringstream ss;
+    ss << static_cast<int>(value_);
+    return ss.str();
   }
 
   ObjectPtr<> eval(const std::shared_ptr<Scope>&) override { return this; }
