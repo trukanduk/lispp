@@ -1,0 +1,10 @@
+// This file was generated from *.lisp sources on compile-time
+
+namespace lispp {{
+namespace builtins {{
+
+const char* kBuiltinsStdlib_{module_name} =
+    {module_text};
+
+}} // builtins
+}} // lispp
