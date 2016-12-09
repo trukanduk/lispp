@@ -9,6 +9,11 @@
 
 namespace lispp {
 
+class InvalidArgumentsNumberError : public ExecutionError {
+public:
+  using ExecutionError::ExecutionError;
+};
+
 bool is_true_value(const ObjectPtr<>& object);
 
 bool is_true_condition(const ObjectPtr<>& condition,
@@ -32,7 +37,7 @@ void throw_bad_arg(const ObjectPtr<>& object,
     ss << *object;
   }
 
-  throw ExecutionError(ss.str());
+  throw InvalidArgumentsNumberError(ss.str());
 }
 
 template<typename ObjectType>
