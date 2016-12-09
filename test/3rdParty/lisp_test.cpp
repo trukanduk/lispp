@@ -1,5 +1,7 @@
 #include "lisp_test.h"
 
+#include <lispp/function_utils.h>
+
 void LispTest::SetUp() {
     vm_.reset(new lispp::VirtualMachine<>());
 }
@@ -33,8 +35,7 @@ void LispTest::ExpectSyntaxError(const std::string& expression) {
         thrown = true;
     } catch (const lispp::ParserError& e) {
         thrown = true;
-    } catch (const lispp::ExecutionError& e) {
-        // (if 1 2 3 4) -- not a syntax error?
+    } catch (const lispp::InvalidArgumentsNumberError& e) {
         thrown = true;
     } catch (...) {}
 
