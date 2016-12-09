@@ -1566,7 +1566,7 @@ private:
   }
 
   static bool IsDigitExt(char c) {
-    return IsDigit(c) || IsSign(c); // || (c == '.');
+    return IsDigit(c) || IsSign(c) || (c == '.');
   }
 
   static bool IsNotQuotes(char c) {
@@ -3430,7 +3430,7 @@ void RunAsRepl() {
       if (result_object.valid()) {
         std::cout << *result_object << std::endl;
       } else {
-        // std::cout << "()" << std::endl;
+        std::cout << "()" << std::endl;
       }
     } catch (const lispp::TokenizerError& e) {
       std::cout << "syntax error" << std::endl;
