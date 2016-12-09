@@ -1286,6 +1286,11 @@ private:
 // file ../include/lispp/function_utils.h
 namespace lispp {
 
+class InvalidArgumentsNumberError : public ExecutionError {
+public:
+  using ExecutionError::ExecutionError;
+};
+
 bool is_true_value(const ObjectPtr<>& object);
 
 bool is_true_condition(const ObjectPtr<>& condition,
@@ -1309,7 +1314,7 @@ void throw_bad_arg(const ObjectPtr<>& object,
     ss << *object;
   }
 
-  throw ExecutionError(ss.str());
+  throw InvalidArgumentsNumberError(ss.str());
 }
 
 template<typename ObjectType>
@@ -1722,6 +1727,10 @@ ObjectPtr<> cond_macro(const std::shared_ptr<Scope>& scope,
 
 ObjectPtr<> if_macro(const std::shared_ptr<Scope>& scope,
                      const std::vector<ObjectPtr<>>& args) {
+  // FiXME: Ya.context extects syntax error!
+  // if (args.size() < 2 || args.size() > 3) {
+  //   throw ParserError("if have invalid number of arguments");
+  // }
   check_args_count("if", args.size(), 2, 3, CallableType::kMacro);
 
   ObjectPtr<> condition = args[0];
@@ -1831,6 +1840,10 @@ namespace {
 
 ObjectPtr<> lambda_macro(const std::shared_ptr<Scope>& scope,
                          const std::vector<ObjectPtr<>>& args) {
+  // FiXME: Ya.context extects syntax error!
+  // if (args.size() < 2) {
+  //   throw ParserError("lambda have invalid number of arguments");
+  // }
   check_args_count("lambda", args.size(), 2, kInfiniteArgs,
                    CallableType::kMacro);
 
@@ -1878,11 +1891,19 @@ namespace {
 
 ObjectPtr<> define_macro(const std::shared_ptr<Scope>& scope,
                      const std::vector<ObjectPtr<>>& args) {
+  // FiXME: Ya.context extects syntax error!
+  // if (args.size() < 2) {
+  //   throw ParserError("define have invalid number of arguments");
+  // }
   check_args_count("define", args.size(), 2, kInfiniteArgs,
                    CallableType::kMacro);
 
   auto varname_symbol = args[0].safe_cast<SymbolObject>();
   if (varname_symbol.valid()) {
+    // FiXME: Ya.context extects syntax error!
+    // if (args.size() != 2) {
+    //   throw ParserError("define have invalid number of arguments");
+    // }
     check_args_count("define", args.size(), 2, CallableType::kMacro);
 
     auto result = args[1].safe_eval(scope);
@@ -1904,6 +1925,10 @@ ObjectPtr<> defmacro_macro(const std::shared_ptr<Scope>& scope,
 
 ObjectPtr<> set_macro(const std::shared_ptr<Scope>& scope,
                   const std::vector<ObjectPtr<>>& args) {
+  // FiXME: Ya.context extects syntax error!
+  // if (args.size() != 2) {
+  //   throw ParserError("set! have invalid number of arguments");
+  // }
   check_args_count("set!", args.size(), 2, CallableType::kMacro);
 
   auto sym_name = arg_cast<SymbolObject>(args[0], "set!");
@@ -2528,7 +2553,7 @@ void check_args_count(const std::string& function_name,
        << function_name
        << "requires exactly " << expected_args_count << " but "
        << args_count << " given";
-    throw ExecutionError(ss.str());
+    throw InvalidArgumentsNumberError(ss.str());
   }
 }
 
@@ -2547,7 +2572,7 @@ void check_args_count(const std::string& function_name,
       ss << " up to " << expected_args_count_max;
     }
     ss << " args but " << args_count << " given";
-    throw ExecutionError(ss.str());
+    throw InvalidArgumentsNumberError(ss.str());
   }
 }
 
@@ -3350,6 +3375,8 @@ void RunAsRepl() {
       std::cout << "TokenizerError: " << e.what() << std::endl;
     } catch (const lispp::ParserError& e) {
       std::cout << "ParserError: " << e.what() << std::endl;
+    } catch (const lispp::InvalidArgumentsNumberError& e) {
+      std::cout << "InvalidArgumentsNumberError: " << e.what() << std::endl;
     } catch (const lispp::ExecutionError& e) {
       std::cout << "ExecutionError: " << e.what() << std::endl;
     } catch (const lispp::ScopeError& e) {
