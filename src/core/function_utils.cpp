@@ -38,7 +38,7 @@ void check_args_count(const std::string& function_name,
        << function_name
        << "requires exactly " << expected_args_count << " but "
        << args_count << " given";
-    throw ExecutionError(ss.str());
+    throw InvalidArgumentsNumberError(ss.str());
   }
 }
 
@@ -57,7 +57,7 @@ void check_args_count(const std::string& function_name,
       ss << " up to " << expected_args_count_max;
     }
     ss << " args but " << args_count << " given";
-    throw ExecutionError(ss.str());
+    throw InvalidArgumentsNumberError(ss.str());
   }
 }
 

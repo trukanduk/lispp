@@ -8,6 +8,7 @@
 #include <lispp/parser.h>
 #include <lispp/scope.h>
 #include <lispp/virtual_machine.h>
+#include <lispp/function_utils.h>
 
 // TODO: command objects
 void RunAsRepl() {
@@ -24,6 +25,8 @@ void RunAsRepl() {
       std::cout << "TokenizerError: " << e.what() << std::endl;
     } catch (const lispp::ParserError& e) {
       std::cout << "ParserError: " << e.what() << std::endl;
+    } catch (const lispp::InvalidArgumentsNumberError& e) {
+      std::cout << "InvalidArgumentsNumberError: " << e.what() << std::endl;
     } catch (const lispp::ExecutionError& e) {
       std::cout << "ExecutionError: " << e.what() << std::endl;
     } catch (const lispp::ScopeError& e) {
