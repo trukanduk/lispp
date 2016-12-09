@@ -32,7 +32,11 @@ ObjectPtr<> cond_macro(const std::shared_ptr<Scope>& scope,
 
 ObjectPtr<> if_macro(const std::shared_ptr<Scope>& scope,
                      const std::vector<ObjectPtr<>>& args) {
-  check_args_count("if", args.size(), 2, 3, CallableType::kMacro);
+  // FiXME: Ya.context extects syntax error!
+  if (args.size() < 2 || args.size() > 3) {
+    throw ParserError("if have invalid number of arguments");
+  }
+  // check_args_count("if", args.size(), 2, 3, CallableType::kMacro);
 
   ObjectPtr<> condition = args[0];
   if (is_true_condition(condition, scope)) {
@@ -141,8 +145,12 @@ namespace {
 
 ObjectPtr<> lambda_macro(const std::shared_ptr<Scope>& scope,
                          const std::vector<ObjectPtr<>>& args) {
-  check_args_count("lambda", args.size(), 2, kInfiniteArgs,
-                   CallableType::kMacro);
+  // FiXME: Ya.context extects syntax error!
+  if (args.size() < 2) {
+    throw ParserError("lambda have invalid number of arguments");
+  }
+  // check_args_count("lambda", args.size(), 2, kInfiniteArgs,
+  //                  CallableType::kMacro);
 
   std::vector<std::string> arg_names;
   std::string rest_arg_name;
@@ -188,12 +196,20 @@ namespace {
 
 ObjectPtr<> define_macro(const std::shared_ptr<Scope>& scope,
                      const std::vector<ObjectPtr<>>& args) {
-  check_args_count("define", args.size(), 2, kInfiniteArgs,
-                   CallableType::kMacro);
+  // FiXME: Ya.context extects syntax error!
+  if (args.size() < 2) {
+    throw ParserError("define have invalid number of arguments");
+  }
+  // check_args_count("define", args.size(), 2, kInfiniteArgs,
+  //                  CallableType::kMacro);
 
   auto varname_symbol = args[0].safe_cast<SymbolObject>();
   if (varname_symbol.valid()) {
-    check_args_count("define", args.size(), 2, CallableType::kMacro);
+    // FiXME: Ya.context extects syntax error!
+    if (args.size() != 2) {
+      throw ParserError("define have invalid number of arguments");
+    }
+    // check_args_count("define", args.size(), 2, CallableType::kMacro);
 
     auto result = args[1].safe_eval(scope);
     scope->set_value(varname_symbol->get_value(), result);
@@ -214,7 +230,11 @@ ObjectPtr<> defmacro_macro(const std::shared_ptr<Scope>& scope,
 
 ObjectPtr<> set_macro(const std::shared_ptr<Scope>& scope,
                   const std::vector<ObjectPtr<>>& args) {
-  check_args_count("set!", args.size(), 2, CallableType::kMacro);
+  // FiXME: Ya.context extects syntax error!
+  if (args.size() != 2) {
+    throw ParserError("set! have invalid number of arguments");
+  }
+  // check_args_count("set!", args.size(), 2, CallableType::kMacro);
 
   auto sym_name = arg_cast<SymbolObject>(args[0], "set!");
 
